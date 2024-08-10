@@ -68,13 +68,11 @@ class AuthService {
         context: context,
         onSuccess: () async {
           final data = jsonDecode(res.body);
-          print('Response data: $data'); // Debug print
 
           // Check if user data is present
           if (data != null && data['user'] != null) {
             final userJson =
                 jsonEncode(data['user']); // Extract the user object
-            print('User JSON: $userJson'); // Debug print
 
             final user = User.fromMap(data['user']);
             userProvider.setUser(userJson);
@@ -133,6 +131,22 @@ class AuthService {
     } catch (e) {
       showSnackBar(context, e.toString());
     }
+  }
+
+  static Future<Map<String, dynamic>> fetchUserData(String token) async {
+    final response = await http.get(
+      Uri.parse('${Constants.uri}/profile'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to fetch user data');
+    }
+
+    return jsonDecode(response.body) as Map<String, dynamic>;
   }
 
   void signOut(BuildContext context) async {
