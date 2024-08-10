@@ -8,6 +8,7 @@ import '../utils/constants.dart';
 import '../widgets/card_courses.dart';
 import '../widgets/header.dart';
 import 'category_screen.dart';
+import 'courses_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -270,7 +271,6 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 List<Widget> _buildDrawerItems(String role, BuildContext context) {
-  print('user role : ${role}');
   if (role == 'Student') {
     return [
       const DrawerHeader(
@@ -299,6 +299,10 @@ List<Widget> _buildDrawerItems(String role, BuildContext context) {
         title: const Text('Courses'),
         onTap: () {
           Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => CoursesScreen()),
+          );
         },
       ),
       ListTile(

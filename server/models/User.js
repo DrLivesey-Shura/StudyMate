@@ -27,6 +27,14 @@ const schema = new mongoose.Schema({
     default: "user",
   },
 
+  subscription: {
+    id: String,
+    status: String,
+  },
+  paymentMethodToken: {
+    type: String,
+    required: false,
+  },
   avatar: {
     public_id: {
       type: String,
@@ -37,6 +45,24 @@ const schema = new mongoose.Schema({
       required: true,
     },
   },
+
+  playlist: [
+    {
+      course: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Course",
+      },
+      poster: String,
+    },
+  ],
+
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+
+  resetPasswordToken: String,
+  resetPasswordExpire: String,
 });
 
 schema.pre("save", async function (next) {
@@ -55,5 +81,19 @@ schema.methods.comparePassword = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
 
+schema.methods.getResetToken = function () {
+  const resetToken = crypto.randomBytes(20).toString("hex");
+
+  this.resetPasswordToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+
+  this.resetPasswordExpire = Date.now() + 15 * 60 * 1000;
+
+  return resetToken;
+};
+
 const User = mongoose.model("User", schema);
+
 module.exports = { User };

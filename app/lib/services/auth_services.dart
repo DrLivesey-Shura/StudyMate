@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
-import 'dart:math';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_node_auth/models/user.dart';
@@ -10,10 +8,8 @@ import 'package:flutter_node_auth/screens/signup_screen.dart';
 import 'package:flutter_node_auth/utils/constants.dart';
 import 'package:flutter_node_auth/utils/utils.dart';
 import 'package:http/http.dart' as http;
-import 'package:mime/mime.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http_parser/http_parser.dart';
 
 class AuthService {
   void signUpUser({
@@ -69,15 +65,18 @@ class AuthService {
         onSuccess: () async {
           final data = jsonDecode(res.body);
 
-          // Check if user data is present
-          if (data != null && data['user'] != null) {
-            final userJson =
-                jsonEncode(data['user']); // Extract the user object
-
+          // Check if user data and token are present
+          if (data != null && data['user'] != null && data['token'] != null) {
+            final userJson = jsonEncode(data['user']);
             final user = User.fromMap(data['user']);
-            userProvider.setUser(userJson);
+            final token = data['token']; // Extract the token
+
+            userProvider.setUserFromModel(user.copyWith(token: token));
+
             SharedPreferences prefs = await SharedPreferences.getInstance();
-            await prefs.setString('x-auth-token', user.token);
+            await prefs.setString(
+                'x-auth-token', token); // Store token in shared preferences
+
             navigator.pushAndRemoveUntil(
               MaterialPageRoute(
                 builder: (context) => HomeScreen(),
@@ -85,7 +84,7 @@ class AuthService {
               (route) => false,
             );
           } else {
-            throw Exception('User data is missing in the response');
+            throw Exception('User data or token is missing in the response');
           }
         },
       );
@@ -103,30 +102,31 @@ class AuthService {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('x-auth-token');
 
-      if (token == null) {
+      if (token == null || token.isEmpty) {
         prefs.setString('x-auth-token', '');
-      }
-
-      var tokenRes = await http.post(
-        Uri.parse('${Constants.uri}/api/tokenIsValid'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-          'x-auth-token': token!,
-        },
-      );
-
-      var response = jsonDecode(tokenRes.body);
-
-      if (response == true) {
-        http.Response userRes = await http.get(
-          Uri.parse('${Constants.uri}/'),
+      } else {
+        var tokenRes = await http.post(
+          Uri.parse('${Constants.uri}/api/tokenIsValid'),
           headers: <String, String>{
             'Content-Type': 'application/json; charset=UTF-8',
-            'x-auth-token': token
+            'x-auth-token': token,
           },
         );
 
-        userProvider.setUser(userRes.body);
+        var response = jsonDecode(tokenRes.body);
+
+        if (response == true) {
+          http.Response userRes = await http.get(
+            Uri.parse('${Constants.uri}/'),
+            headers: <String, String>{
+              'Content-Type': 'application/json; charset=UTF-8',
+              'x-auth-token': token,
+            },
+          );
+
+          userProvider.setUserFromModel(
+              User.fromMap(jsonDecode(userRes.body)).copyWith(token: token));
+        }
       }
     } catch (e) {
       showSnackBar(context, e.toString());

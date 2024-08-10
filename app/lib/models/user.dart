@@ -68,6 +68,27 @@ class User {
     required this.avatar,
     this.subscription,
   });
+  User copyWith({
+    String? id,
+    String? name,
+    String? email,
+    String? token,
+    String? role,
+    String? password,
+    Avatar? avatar,
+    Subscription? subscription,
+  }) {
+    return User(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      email: email ?? this.email,
+      token: token ?? this.token,
+      role: role ?? this.role,
+      password: password ?? this.password,
+      avatar: avatar ?? this.avatar,
+      subscription: subscription ?? this.subscription,
+    );
+  }
 
   factory User.fromMap(Map<String, dynamic> map) {
     return User(

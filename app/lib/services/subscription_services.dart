@@ -1,9 +1,6 @@
-import 'package:flutter_node_auth/providers/user_provider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_node_auth/utils/constants.dart';
-import 'package:flutter_node_auth/models/user.dart';
-import 'package:provider/provider.dart';
 
 class SubscribeService {
   static Future<void> subscribe(String token) async {
