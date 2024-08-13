@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_node_auth/providers/user_provider.dart';
+import 'package:flutter_node_auth/screens/profile_screen.dart';
 import 'package:flutter_node_auth/services/auth_services.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
 import '../utils/constants.dart';
@@ -41,33 +41,44 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: PreferredSize(
-        preferredSize: Size(double.infinity, 100),
+        preferredSize: const Size(double.infinity, 100),
         child: SafeArea(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: <Widget>[
-              Container(
-                margin: EdgeInsets.symmetric(
-                  horizontal: Constants.mainPadding,
-                  vertical: Constants.mainPadding,
-                ),
-                height: 44,
-                width: 44,
-                child: TextButton(
-                  onPressed: () {
-                    debugPrint("Menu pressed");
-                  },
-                  style: TextButton.styleFrom(
-                    backgroundColor: Colors.white.withOpacity(0.3),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
+          child: Builder(
+            builder: (BuildContext context) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  Container(
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 16.0,
+                      vertical: 16.0,
+                    ),
+                    height: 44,
+                    width: 44,
+                    child: TextButton(
+                      onPressed: () {
+                        Scaffold.of(context).openDrawer(); // Opens the Drawer
+                      },
+                      style: TextButton.styleFrom(
+                        backgroundColor: Colors.white.withOpacity(0.3),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                      ),
+                      child: const Icon(Icons.menu, color: Colors.white),
                     ),
                   ),
-                  child: Icon(Icons.menu, color: Colors.white),
-                ),
-              ),
-            ],
+                ],
+              );
+            },
           ),
+        ),
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: _buildDrawerItems(
+              user.role, context), // Build drawer items based on user role
         ),
       ),
       body: Stack(
@@ -81,7 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 SizedBox(height: Constants.mainPadding * 2),
                 Text(
                   "Welcome back ${user.name}\n ${user.role}!",
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 34,
                     fontWeight: FontWeight.w900,
                     color: Colors.white,
@@ -89,7 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 SizedBox(height: Constants.mainPadding),
                 Container(
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.all(
                       Radius.circular(20.0),
@@ -102,13 +113,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       color: Constants.textDark,
                     ),
                     decoration: InputDecoration(
-                      contentPadding: EdgeInsets.all(20.0),
+                      contentPadding: const EdgeInsets.all(20.0),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20.0),
-                        borderSide: BorderSide(color: Colors.white),
+                        borderSide: const BorderSide(color: Colors.white),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white),
+                        borderSide: const BorderSide(color: Colors.white),
                         borderRadius: BorderRadius.circular(20.0),
                       ),
                       hintText: "Search courses",
@@ -121,7 +132,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           debugPrint("Search pressed");
                         },
                       ),
-                      hintStyle: TextStyle(
+                      hintStyle: const TextStyle(
                         fontSize: 15.0,
                       ),
                     ),
@@ -134,10 +145,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: <Widget>[
                     Container(
                       width: double.infinity,
-                      padding: EdgeInsets.all(30.0),
+                      padding: const EdgeInsets.all(30.0),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(30.0),
-                        color: Color(0xFFFEF3F3),
+                        color: const Color(0xFFFEF3F3),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -151,7 +162,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               color: Constants.textDark,
                             ),
                           ),
-                          SizedBox(height: 10.0),
+                          const SizedBox(height: 10.0),
                           Container(
                             width: 150,
                             child: TextButton(
@@ -170,7 +181,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   borderRadius: BorderRadius.circular(13.0),
                                 ),
                               ),
-                              child: Row(
+                              child: const Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: <Widget>[
                                   Expanded(
@@ -201,7 +212,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ],
                 ),
-                SizedBox(height: 20.0),
+                const SizedBox(height: 20.0),
                 Text(
                   "Courses in progress",
                   style: TextStyle(
@@ -210,10 +221,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(height: 20.0),
+                const SizedBox(height: 20.0),
                 ListView(
                   scrollDirection: Axis.vertical,
-                  physics: NeverScrollableScrollPhysics(),
+                  physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   children: <Widget>[
                     // Replace this with your CardCourses widget
@@ -255,5 +266,110 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
     );
+  }
+}
+
+List<Widget> _buildDrawerItems(String role, BuildContext context) {
+  print('user role : ${role}');
+  if (role == 'Student') {
+    return [
+      const DrawerHeader(
+        decoration: BoxDecoration(
+          color: Colors.blue,
+        ),
+        child: Center(
+          child: Text(
+            'Menu',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 24,
+            ),
+          ),
+        ),
+      ),
+      ListTile(
+        leading: const Icon(Icons.home),
+        title: const Text('Home'),
+        onTap: () {
+          Navigator.pop(context);
+        },
+      ),
+      ListTile(
+        leading: const Icon(Icons.book),
+        title: const Text('Courses'),
+        onTap: () {
+          Navigator.pop(context);
+        },
+      ),
+      ListTile(
+        leading: Icon(Icons.person),
+        title: Text('Profile'),
+        onTap: () {
+          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ProfileScreen()),
+          );
+        },
+      ),
+      ListTile(
+        leading: const Icon(Icons.logout),
+        title: const Text('Logout'),
+        onTap: () {
+          // signOutUser(context);
+        },
+      ),
+    ];
+  } else if (role == 'Teacher') {
+    return [
+      const DrawerHeader(
+        decoration: BoxDecoration(
+          color: Colors.blue,
+        ),
+        child: Center(
+          child: Text(
+            'Menu',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 24,
+            ),
+          ),
+        ),
+      ),
+      ListTile(
+        leading: const Icon(Icons.home),
+        title: const Text('Home'),
+        onTap: () {
+          Navigator.pop(context);
+        },
+      ),
+      ListTile(
+        leading: const Icon(Icons.book),
+        title: const Text('Manage Courses'),
+        onTap: () {
+          Navigator.pop(context);
+        },
+      ),
+      ListTile(
+        leading: Icon(Icons.person),
+        title: Text('Profile'),
+        onTap: () {
+          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ProfileScreen()),
+          );
+        },
+      ),
+      ListTile(
+        leading: const Icon(Icons.logout),
+        title: const Text('Logout'),
+        onTap: () {
+          // signOutUser(context);
+        },
+      ),
+    ];
+  } else {
+    return [const Center()];
   }
 }

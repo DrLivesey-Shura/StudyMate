@@ -24,6 +24,30 @@ class Avatar {
   }
 }
 
+class Subscription {
+  final String id;
+  final String status;
+
+  Subscription({
+    required this.id,
+    required this.status,
+  });
+
+  factory Subscription.fromMap(Map<String, dynamic> map) {
+    return Subscription(
+      id: map['id'] ?? '',
+      status: map['status'] ?? '',
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'status': status,
+    };
+  }
+}
+
 class User {
   final String id;
   final String name;
@@ -32,6 +56,7 @@ class User {
   final String role;
   final String password;
   final Avatar avatar;
+  final Subscription? subscription;
 
   User({
     required this.id,
@@ -41,6 +66,7 @@ class User {
     required this.role,
     required this.password,
     required this.avatar,
+    this.subscription,
   });
 
   factory User.fromMap(Map<String, dynamic> map) {
@@ -52,6 +78,9 @@ class User {
       role: map['role'] ?? '',
       password: map['password'] ?? '',
       avatar: Avatar.fromMap(map['avatar'] ?? {}),
+      subscription: map['subscription'] != null
+          ? Subscription.fromMap(map['subscription'])
+          : null,
     );
   }
 
@@ -64,6 +93,7 @@ class User {
       'role': role,
       'password': password,
       'avatar': avatar.toMap(),
+      'subscription': subscription?.toMap(), // Nullable check
     };
   }
 
