@@ -47,6 +47,7 @@ dependencies:
   percent_indicator: ^4.2.3
   flutter_braintree: ^4.0.0
   video_player: ^2.9.1
+  js: ^0.7.1
 
 dev_dependencies:
   flutter_test:
