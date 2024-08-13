@@ -6,6 +6,7 @@ const {
   createCourse,
   getCourseLectures,
   deleteCourse,
+  editCourse,
 } = require("../controllers/courseController.js");
 
 const {
@@ -32,7 +33,8 @@ router
   .route("/course/:id")
   .get(isAuthenticated, getCourseLectures)
   .post(isAuthenticated, authorizeAdmin, singleUpload, addLecture)
-  .delete(isAuthenticated, authorizeAdmin, deleteCourse);
+  .delete(isAuthenticated, authorizeAdmin, deleteCourse)
+  .put(isAuthenticated, authorizeAdmin, singleUpload, editCourse);
 
 // Create Recommendation based on User's Playlist
 router.route("/recommend").post(createRecommendation);

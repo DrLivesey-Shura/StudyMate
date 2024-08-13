@@ -4,7 +4,6 @@ const catchAsyncError = require("./catchAsyncError.js");
 const { User } = require("../models/User.js");
 
 const isAuthenticated = catchAsyncError(async (req, res, next) => {
-  // const { token } = req.cookies;
   const token = req.cookies || req.headers.authorization?.split(" ")[1];
   // const token = req.cookies || req.headers.cookie?.split("=")[1];
 
@@ -27,7 +26,7 @@ const authorizeSubscribers = (req, res, next) => {
 };
 
 const authorizeAdmin = (req, res, next) => {
-  if (req.user.role !== "admin")
+  if (req.user.role !== "Teacher")
     return next(
       new ErrorHandler(
         `${req.user.role} is not allowed to access this resource`,

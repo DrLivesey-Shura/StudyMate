@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_node_auth/providers/user_provider.dart';
+import 'package:flutter_node_auth/screens/Teacher/add_course_screen.dart';
+import 'package:flutter_node_auth/screens/Teacher/manage_courses_screen.dart';
 import 'package:flutter_node_auth/screens/profile_screen.dart';
 import 'package:flutter_node_auth/services/auth_services.dart';
 import 'package:provider/provider.dart';
@@ -352,6 +354,21 @@ List<Widget> _buildDrawerItems(String role, BuildContext context) {
         title: const Text('Manage Courses'),
         onTap: () {
           Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ManageCoursesScreen()),
+          );
+        },
+      ),
+      ListTile(
+        leading: const Icon(Icons.add_box),
+        title: const Text('Create Course'),
+        onTap: () {
+          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => AddCourseScreen()),
+          );
         },
       ),
       ListTile(
