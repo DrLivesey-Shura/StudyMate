@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:flutter_node_auth/providers/user_provider.dart';
 import '../models/course.dart';
 import 'package:video_player/video_player.dart';
-
 import '../utils/constants.dart';
 
 class CoursesScreen extends StatefulWidget {
@@ -78,22 +77,18 @@ class _CoursesScreenState extends State<CoursesScreen> {
                           ),
                         ),
                         children: [
-                          Text(
-                            course.description,
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey[600],
+                          for (var i = 0; i < course.lectures.length; i++)
+                            LectureTile(
+                              lecture: course.lectures[i],
+                              isFree: i == 0,
                             ),
-                          ),
-                          for (var lecture in course.lectures)
-                            LectureTile(lecture: lecture), // Adjust if needed
                         ],
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: <Widget>[
                           Text(
-                            '${course.lectures.length} Videos', // Adjust if needed
+                            '${course.lectures.length} Videos',
                             style: const TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.bold,
@@ -118,8 +113,9 @@ class _CoursesScreenState extends State<CoursesScreen> {
 
 class LectureTile extends StatefulWidget {
   final Lecture lecture;
+  final bool isFree;
 
-  LectureTile({required this.lecture});
+  LectureTile({required this.lecture, required this.isFree});
 
   @override
   _LectureTileState createState() => _LectureTileState();
@@ -144,50 +140,66 @@ class _LectureTileState extends State<LectureTile> {
 
   @override
   Widget build(BuildContext context) {
+    final user = Provider.of<UserProvider>(context).user;
+    final isSubscribed = user.subscription?.status == 'active';
+
     return Column(
       children: [
         ListTile(
           title: Text(widget.lecture.title),
           subtitle: Text(widget.lecture.description),
+          trailing: !widget.isFree && !isSubscribed
+              ? Icon(Icons.lock,
+                  color: Colors.red) // Show a lock icon for paid lectures
+              : null,
+          onTap: !widget.isFree && !isSubscribed
+              ? () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Subscribe to unlock this lecture')),
+                  );
+                }
+              : null,
         ),
-        FutureBuilder(
-          future: _initializeVideoPlayerFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
-              return Container(
-                height: 200, // Set your preferred height
-                width: double.infinity, // Make it as wide as possible
-                child: AspectRatio(
-                  aspectRatio: _controller.value.aspectRatio,
-                  child: VideoPlayer(_controller),
+        if (widget.isFree || isSubscribed)
+          FutureBuilder(
+            future: _initializeVideoPlayerFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                return Container(
+                  height: 200, // Set your preferred height
+                  width: double.infinity, // Make it as wide as possible
+                  child: AspectRatio(
+                    aspectRatio: _controller.value.aspectRatio,
+                    child: VideoPlayer(_controller),
+                  ),
+                );
+              } else {
+                return const Center(child: CircularProgressIndicator());
+              }
+            },
+          ),
+        if (widget.isFree || isSubscribed)
+          Row(
+            children: [
+              IconButton(
+                icon: Icon(
+                  _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
                 ),
-              );
-            } else {
-              return const Center(child: CircularProgressIndicator());
-            }
-          },
-        ),
-        Row(
-          children: [
-            IconButton(
-              icon: Icon(
-                _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
+                onPressed: () {
+                  setState(() {
+                    if (_controller.value.isPlaying) {
+                      _controller.pause();
+                    } else {
+                      _controller.play();
+                    }
+                  });
+                },
               ),
-              onPressed: () {
-                setState(() {
-                  if (_controller.value.isPlaying) {
-                    _controller.pause();
-                  } else {
-                    _controller.play();
-                  }
-                });
-              },
-            ),
-            Text(
-              _controller.value.isPlaying ? 'Pause' : 'Play',
-            ),
-          ],
-        ),
+              Text(
+                _controller.value.isPlaying ? 'Pause' : 'Play',
+              ),
+            ],
+          ),
       ],
     );
   }

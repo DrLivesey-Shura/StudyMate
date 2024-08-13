@@ -32,6 +32,7 @@ const Schema = new mongoose.Schema({
           required: true,
         },
       },
+      isFree: { type: Boolean, default: false },
     },
   ],
   poster: {
