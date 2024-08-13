@@ -6,6 +6,8 @@ require("dotenv").config();
 const cloudinary = require("cloudinary");
 
 const user = require("./routes/userRoutes");
+const payment = require("./routes/paymentRoutes");
+const course = require("./routes/courseRoutes");
 // Mongo DB Connections
 mongoose
   .connect(process.env.MONGO_DB_URL, {
@@ -31,6 +33,8 @@ cloudinary.v2.config({
 
 // Routes
 app.use("/api", user);
+app.use("/api/", payment);
+app.use("/api/", course);
 
 // Connection
 const PORT = process.env.PORT || 5000;

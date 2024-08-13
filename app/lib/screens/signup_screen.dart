@@ -1,15 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_node_auth/utils/utils.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:flutter_node_auth/custom_textfield.dart';
 import 'package:flutter_node_auth/screens/login_screen.dart';
 import 'package:flutter_node_auth/services/auth_services.dart';
-import 'dart:io';
-import 'package:file_picker/file_picker.dart';
 import 'dart:typed_data';
 import 'dart:html' as html;
-import 'dart:typed_data';
-import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import '../utils/constants.dart';
@@ -26,7 +21,6 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController nameController = TextEditingController();
   final AuthService authService = AuthService();
-  File? _image;
   Uint8List? _imageBytes;
   String? _fileName;
 

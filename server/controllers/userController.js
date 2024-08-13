@@ -4,6 +4,7 @@ const { User } = require("../models/User.js");
 const sendToken = require("../utils/sendToken.js");
 const cloudinary = require("cloudinary");
 const getDataUri = require("../utils/dataUri.js");
+const { Stats } = require("../models/Stats.js");
 
 const register = catchAsyncError(async (req, res, next) => {
   const { name, email, password } = req.body;
@@ -174,6 +175,21 @@ const deleteUser = catchAsyncError(async (req, res, next) => {
     success: true,
     message: "User Deleted Successfully",
   });
+});
+
+User.watch().on("change", async () => {
+  let stat_size = await Stats.countDocuments();
+  if (stat_size === 0) {
+    await Stats.create({});
+  }
+  const stats = await Stats.find({}).sort({ createdAt: "desc" }).limit(1);
+  const subscription = await User.find({ "subscription.status": "Active" });
+  const users = await User.countDocuments();
+  stats[0].users = users;
+  stats[0].subscription = subscription.length;
+  stats[0].createdAt = new Date(Date.now());
+
+  await stats[0].save();
 });
 
 module.exports = {

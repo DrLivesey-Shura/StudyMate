@@ -4,9 +4,9 @@ const catchAsyncError = require("./catchAsyncError.js");
 const { User } = require("../models/User.js");
 
 const isAuthenticated = catchAsyncError(async (req, res, next) => {
-  const { token } = req.cookies;
-  // const { token } =
-  //   req.cookies.token || req.headers.authorization?.split(" ")[1];
+  // const { token } = req.cookies;
+  const token = req.cookies || req.headers.authorization?.split(" ")[1];
+  // const token = req.cookies || req.headers.cookie?.split("=")[1];
 
   if (!token) return next(new ErrorHandler("Not Logged In", 401));
 
@@ -38,4 +38,4 @@ const authorizeAdmin = (req, res, next) => {
   next();
 };
 
-module.exports = { authorizeAdmin, isAuthenticated };
+module.exports = { authorizeAdmin, authorizeSubscribers, isAuthenticated };
