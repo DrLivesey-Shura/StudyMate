@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_node_auth/utils/utils.dart';
 import 'package:http/http.dart' as http;
+import 'package:test/utils/utils.dart';
 import 'dart:typed_data';
 
 import '../models/course.dart';
@@ -131,18 +131,21 @@ class CourseService {
     required String title,
     required String description,
     required Uint8List video,
+    required String token,
   }) async {
     var request = http.MultipartRequest(
       'POST',
       Uri.parse('${Constants.uri}/api/course/$courseId'),
     );
+    request.headers['Authorization'] = 'Bearer $token';
+    request.headers['Content-Type'] = 'application/json';
     request.fields['title'] = title;
     request.fields['description'] = description;
     request.files.add(http.MultipartFile.fromBytes('file', video as List<int>,
         filename: 'lecture_video.mp4'));
 
     var res = await request.send();
-
+    print('respo0nse : ${res.statusCode}');
     if (res.statusCode == 200) {
       showSnackBar(context, 'Lecture added successfully!');
     } else {

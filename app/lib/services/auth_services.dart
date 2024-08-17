@@ -1,15 +1,15 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:flutter_node_auth/models/user.dart';
-import 'package:flutter_node_auth/providers/user_provider.dart';
-import 'package:flutter_node_auth/screens/home_screen.dart';
-import 'package:flutter_node_auth/screens/signup_screen.dart';
-import 'package:flutter_node_auth/utils/constants.dart';
-import 'package:flutter_node_auth/utils/utils.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:test/models/user.dart';
+import 'package:test/providers/user_provider.dart';
+import 'package:test/screens/home_screen.dart';
+import 'package:test/screens/signup_screen.dart';
+import 'package:test/utils/constants.dart';
+import 'package:test/utils/utils.dart';
 
 class AuthService {
   void signUpUser({
@@ -74,8 +74,7 @@ class AuthService {
             userProvider.setUserFromModel(user.copyWith(token: token));
 
             SharedPreferences prefs = await SharedPreferences.getInstance();
-            await prefs.setString(
-                'x-auth-token', token); // Store token in shared preferences
+            await prefs.setString('x-auth-token', token);
 
             navigator.pushAndRemoveUntil(
               MaterialPageRoute(

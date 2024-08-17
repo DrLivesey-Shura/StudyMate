@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_node_auth/utils/utils.dart';
-import 'package:flutter_node_auth/custom_textfield.dart';
-import 'package:flutter_node_auth/screens/login_screen.dart';
-import 'package:flutter_node_auth/services/auth_services.dart';
 import 'dart:typed_data';
-import 'dart:html' as html;
+import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
+import 'package:test/custom_textfield.dart';
+import 'package:test/screens/login_screen.dart';
+import 'package:test/services/auth_services.dart';
+import 'package:test/utils/utils.dart';
 
 import '../utils/constants.dart';
 
@@ -25,30 +25,22 @@ class _SignupScreenState extends State<SignupScreen> {
   String? _fileName;
 
   Future<void> _pickImage() async {
-    final html.FileUploadInputElement uploadInput =
-        html.FileUploadInputElement();
-    uploadInput.accept = 'image/*';
-    uploadInput.click();
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
-    uploadInput.onChange.listen((e) async {
-      final files = uploadInput.files;
-      if (files!.isEmpty) return;
-
-      final reader = html.FileReader();
-      reader.readAsArrayBuffer(files[0]);
-      reader.onLoadEnd.listen((e) {
-        setState(() {
-          _imageBytes = reader.result as Uint8List;
-          _fileName = files[0].name;
-        });
+    if (image != null) {
+      final Uint8List imageBytes = await image.readAsBytes();
+      setState(() {
+        _imageBytes = imageBytes;
+        _fileName = image.name;
       });
-    });
+    }
   }
 
   Future<void> signupUser() async {
     if (_imageBytes == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please select an avatar image')),
+        const SnackBar(content: Text('Please select an avatar image')),
       );
       return;
     }

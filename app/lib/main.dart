@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_node_auth/providers/user_provider.dart';
-import 'package:flutter_node_auth/screens/home_screen.dart';
-import 'package:flutter_node_auth/screens/signup_screen.dart';
-import 'package:flutter_node_auth/services/auth_services.dart';
 import 'package:provider/provider.dart';
-// import 'package:cloudinary_url_gen/cloudinary.dart';
-// import 'package:cloudinary_flutter/image/cld_image.dart';
-// import 'package:cloudinary_flutter/cloudinary_context.dart';
+import 'package:test/providers/user_provider.dart';
+import 'package:test/screens/home_screen.dart';
+import 'package:test/screens/signup_screen.dart';
+import 'package:test/services/auth_services.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 
 void main() {
-  // ignore: deprecated_member_use
-  // CloudinaryContext.cloudinary =
-  //     Cloudinary.fromCloudName(cloudName: 'do7c6mjcd');
+  Stripe.publishableKey =
+      "pk_test_51Pnn3DC1JQ2VbTUTai7ZicwfvlYd1vCWirJBRut4XSsQIay9HYWbfr425VwHgy1NmH01rOXoUD8VU8Lw8fmPCUF900HOXIolbP";
+
   runApp(
     MultiProvider(
       providers: [
