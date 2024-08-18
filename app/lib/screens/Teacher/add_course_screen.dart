@@ -5,7 +5,6 @@ import 'package:test/models/user.dart';
 import 'package:test/providers/user_provider.dart';
 import 'package:test/services/course_service.dart';
 import 'dart:typed_data';
-// import 'dart:html' as html;
 
 class AddCourseScreen extends StatefulWidget {
   @override

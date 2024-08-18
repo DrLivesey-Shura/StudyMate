@@ -44,8 +44,6 @@ class _ChatScreenState extends State<ChatScreen> {
     });
 
     socket.on('receiveMessage', (data) {
-      print('Message received: $data');
-
       final newMessage = Message.fromMap(data);
 
       if (newMessage.senderId == selectedUser?.id ||

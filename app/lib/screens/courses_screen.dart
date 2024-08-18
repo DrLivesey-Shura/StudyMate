@@ -53,7 +53,7 @@ class _CoursesScreenState extends State<CoursesScreen> {
                       const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15.0),
-                    color: Constants.lightPink, // Replace with your color
+                    color: Constants.lightPink,
                   ),
                   child: Column(
                     children: [
@@ -149,8 +149,7 @@ class _LectureTileState extends State<LectureTile> {
           title: Text(widget.lecture.title),
           subtitle: Text(widget.lecture.description),
           trailing: !widget.isFree && !isSubscribed
-              ? Icon(Icons.lock,
-                  color: Colors.red) // Show a lock icon for paid lectures
+              ? Icon(Icons.lock, color: Colors.red)
               : null,
           onTap: !widget.isFree && !isSubscribed
               ? () {
@@ -166,8 +165,8 @@ class _LectureTileState extends State<LectureTile> {
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 return Container(
-                  height: 200, // Set your preferred height
-                  width: double.infinity, // Make it as wide as possible
+                  height: 200,
+                  width: double.infinity,
                   child: AspectRatio(
                     aspectRatio: _controller.value.aspectRatio,
                     child: VideoPlayer(_controller),

@@ -70,7 +70,6 @@ const getCourseLectures = catchAsyncError(async (req, res, next) => {
   });
 });
 
-// // Max video size 100mb
 const addLecture = catchAsyncError(async (req, res, next) => {
   const { id } = req.params;
   const { title, description } = req.body;
@@ -116,10 +115,8 @@ const deleteCourse = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("Course not found", 404));
   }
 
-  // Delete course poster from cloudinary
   await cloudinary.v2.uploader.destroy(course.poster.public_id);
 
-  // Delete all lectures' videos from cloudinary
   for (let i = 0; i < course.lectures.length; i++) {
     const singleLecture = course.lectures[i];
     await cloudinary.v2.uploader.destroy(singleLecture.video.public_id, {
@@ -166,28 +163,23 @@ const editCourse = catchAsyncError(async (req, res, next) => {
   const { id } = req.params;
   const { title, description, category, createdBy } = req.body;
 
-  // Find the course by ID
   let course = await Course.findById(id);
 
   if (!course) {
     return next(new ErrorHandler("Course not found", 404));
   }
 
-  // Update the course details
   course.title = title || course.title;
   course.description = description || course.description;
   course.category = category || course.category;
   course.createdBy = createdBy || course.createdBy;
 
-  // If a new poster is provided, update it in Cloudinary
   if (req.file) {
     const file = req.file;
     const fileUri = getDataUri(file);
 
-    // Delete the old poster from Cloudinary
     await cloudinary.v2.uploader.destroy(course.poster.public_id);
 
-    // Upload the new poster to Cloudinary
     const mycloud = await cloudinary.v2.uploader.upload(fileUri.content, {
       folder: "elearning",
     });
@@ -198,7 +190,6 @@ const editCourse = catchAsyncError(async (req, res, next) => {
     };
   }
 
-  // Save the updated course
   await course.save();
 
   res.status(200).json({

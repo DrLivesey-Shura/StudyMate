@@ -57,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     width: 44,
                     child: TextButton(
                       onPressed: () {
-                        Scaffold.of(context).openDrawer(); // Opens the Drawer
+                        Scaffold.of(context).openDrawer();
                       },
                       style: TextButton.styleFrom(
                         backgroundColor: Colors.white.withOpacity(0.3),
@@ -77,8 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
-          children: _buildDrawerItems(
-              user.role, context), // Build drawer items based on user role
+          children: _buildDrawerItems(user.role, context),
         ),
       ),
       body: Stack(
@@ -227,7 +226,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   children: <Widget>[
-                    // Replace this with your CardCourses widget
                     CardCourses(
                       image: Image.asset("assets/images/icon_1.png",
                           width: 40, height: 40),

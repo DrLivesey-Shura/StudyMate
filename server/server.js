@@ -1,4 +1,3 @@
-// server (nodejs)
 const http = require("http");
 const express = require("express");
 const cors = require("cors");
@@ -59,7 +58,6 @@ io.on("connection", (socket) => {
     try {
       await newMessage.save();
 
-      // Emit the message to the sender's and receiver's rooms
       io.to(senderId).emit("receiveMessage", newMessage);
       io.to(receiverId).emit("receiveMessage", newMessage);
     } catch (error) {

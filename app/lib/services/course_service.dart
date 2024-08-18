@@ -21,7 +21,6 @@ class CourseService {
       List<Course> courses =
           data.map((course) => Course.fromMap(course)).toList();
 
-      // Fetch lectures for each course
       for (Course course in courses) {
         course.lectures = await fetchLectures(course.id, token);
       }
