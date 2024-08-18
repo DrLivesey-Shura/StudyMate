@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 class Constants {
   // Name
   static String appName = "e-Learning";
-  static String uri = 'http://192.168.1.7:5000';
+  static String uri = 'http://192.168.1.6:5000';
 
   // Material Design Color
   static Color lightPrimary = Color(0xfffcfcff);
