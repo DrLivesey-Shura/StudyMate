@@ -33,11 +33,13 @@ const payment = require("./routes/paymentRoutes");
 const course = require("./routes/courseRoutes");
 const chat = require("./routes/chatRoutes");
 const Message = require("./models/Message");
+const stats = require("./routes/statsRoutes");
 
 app.use("/api", user);
 app.use("/api", payment);
 app.use("/api", course);
 app.use("/api", chat);
+app.use("/api", stats);
 
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);

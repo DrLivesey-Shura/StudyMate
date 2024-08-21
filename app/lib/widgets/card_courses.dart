@@ -8,8 +8,6 @@ class CardCourses extends StatelessWidget {
   final Image image;
   final String title;
   final String hours;
-  final String progress;
-  final double percentage;
   final Color color;
 
   CardCourses({
@@ -17,8 +15,6 @@ class CardCourses extends StatelessWidget {
     required this.image,
     required this.title,
     required this.hours,
-    required this.percentage,
-    required this.progress,
     required this.color,
   }) : super(key: key);
 
@@ -67,14 +63,6 @@ class CardCourses extends StatelessWidget {
           ),
           Row(
             children: <Widget>[
-              Text(
-                progress,
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold,
-                  color: Constants.textDark,
-                ),
-              ),
               SizedBox(
                 width: 10,
               ),
@@ -86,7 +74,6 @@ class CardCourses extends StatelessWidget {
                   radius: 43.0,
                   lineWidth: 2.0,
                   animation: true,
-                  percent: percentage,
                   center: Icon(Icons.play_arrow, color: Color(0xFFF18C8E)),
                   circularStrokeCap: CircularStrokeCap.round,
                   progressColor: Color(0xFFF18C8E),

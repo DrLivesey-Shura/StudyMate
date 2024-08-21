@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:test/models/course.dart';
+import 'package:test/models/user.dart';
 import 'package:test/providers/user_provider.dart';
 import 'package:test/screens/Teacher/add_course_screen.dart';
 import 'package:test/screens/Teacher/manage_courses_screen.dart';
+import 'package:test/screens/Teacher/teacher_stats_screen.dart';
 import 'package:test/screens/chatscreen.dart';
 import 'package:test/screens/courses_screen.dart';
 import 'package:test/screens/profile_screen.dart';
 import 'package:test/services/auth_services.dart';
+import 'package:test/services/course_service.dart';
 
 import '../utils/constants.dart';
 import '../widgets/card_courses.dart';
 import '../widgets/header.dart';
-import 'category_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -21,10 +24,13 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _searchControl = TextEditingController();
   late FocusNode myFocusNode;
+  late Future<List<Course>> _coursesFuture;
 
   @override
   void initState() {
     super.initState();
+    _coursesFuture = _fetchCourses();
+
     myFocusNode = FocusNode();
   }
 
@@ -33,6 +39,11 @@ class _HomeScreenState extends State<HomeScreen> {
     _searchControl.dispose();
     myFocusNode.dispose();
     super.dispose();
+  }
+
+  Future<List<Course>> _fetchCourses() async {
+    User user = Provider.of<UserProvider>(context, listen: false).user;
+    return await CourseService.fetchCourses(user.token);
   }
 
   @override
@@ -170,7 +181,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => CategoryScreen(),
+                                    builder: (context) => CoursesScreen(),
                                   ),
                                 );
                               },
@@ -186,7 +197,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   Expanded(
                                     child: Center(
                                       child: Text(
-                                        "Categories",
+                                        "Let's Begin",
                                         style: TextStyle(color: Colors.white),
                                       ),
                                     ),
@@ -213,7 +224,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 const SizedBox(height: 20.0),
                 Text(
-                  "Courses in progress",
+                  "Courses Overview",
                   style: TextStyle(
                     color: Constants.textDark,
                     fontSize: 18,
@@ -221,42 +232,37 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 const SizedBox(height: 20.0),
-                ListView(
-                  scrollDirection: Axis.vertical,
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  children: <Widget>[
-                    CardCourses(
-                      image: Image.asset("assets/images/icon_1.png",
-                          width: 40, height: 40),
-                      color: Constants.lightPink,
-                      title: "Adobe XD Prototyping",
-                      hours: "10 hours, 19 lessons",
-                      progress: "25%",
-                      percentage: 0.25,
-                      key: GlobalKey(),
-                    ),
-                    CardCourses(
-                      image: Image.asset("assets/images/icon_2.png",
-                          width: 40, height: 40),
-                      color: Constants.lightYellow,
-                      title: "Sketch shortcuts and tricks",
-                      hours: "10 hours, 19 lessons",
-                      progress: "50%",
-                      percentage: 0.5,
-                      key: GlobalKey(),
-                    ),
-                    CardCourses(
-                      image: Image.asset("assets/images/icon_3.png",
-                          width: 40, height: 40),
-                      color: Constants.lightViolet,
-                      title: "UI Motion Design in After Effects",
-                      hours: "10 hours, 19 lessons",
-                      progress: "75%",
-                      percentage: 0.75,
-                      key: GlobalKey(),
-                    ),
-                  ],
+                FutureBuilder<List<Course>>(
+                  future: _coursesFuture,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Center(child: Text("Error fetching courses"));
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return Center(child: Text("No courses available"));
+                    } else {
+                      return ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: snapshot.data!.length,
+                        itemBuilder: (context, index) {
+                          final course = snapshot.data![index];
+                          return CardCourses(
+                            image: Image.network(
+                              course.poster.url,
+                              width: 80,
+                              height: 80,
+                            ),
+                            color: Constants.lightPink,
+                            title: course.title,
+                            hours: "${course.lectures.length} lessons",
+                            key: GlobalKey(),
+                          );
+                        },
+                      );
+                    }
+                  },
                 ),
               ],
             ),
@@ -274,11 +280,11 @@ List<Widget> _buildDrawerItems(String role, BuildContext context) {
 
   if (role == 'Student') {
     return [
-      const DrawerHeader(
+      DrawerHeader(
         decoration: BoxDecoration(
-          color: Colors.blue,
+          color: Constants.blueDark,
         ),
-        child: Center(
+        child: const Center(
           child: Text(
             'Menu',
             style: TextStyle(
@@ -287,13 +293,6 @@ List<Widget> _buildDrawerItems(String role, BuildContext context) {
             ),
           ),
         ),
-      ),
-      ListTile(
-        leading: const Icon(Icons.home),
-        title: const Text('Home'),
-        onTap: () {
-          Navigator.pop(context);
-        },
       ),
       ListTile(
         leading: const Icon(Icons.book),
@@ -318,13 +317,6 @@ List<Widget> _buildDrawerItems(String role, BuildContext context) {
         },
       ),
       ListTile(
-        leading: const Icon(Icons.logout),
-        title: const Text('Logout'),
-        onTap: () {
-          signOutUser(context);
-        },
-      ),
-      ListTile(
         leading: const Icon(Icons.chat),
         title: const Text('Chat'),
         onTap: () {
@@ -335,12 +327,19 @@ List<Widget> _buildDrawerItems(String role, BuildContext context) {
           );
         },
       ),
+      ListTile(
+        leading: const Icon(Icons.logout),
+        title: const Text('Logout'),
+        onTap: () {
+          signOutUser(context);
+        },
+      ),
     ];
   } else if (role == 'Teacher') {
     return [
-      const DrawerHeader(
+      DrawerHeader(
         decoration: BoxDecoration(
-          color: Colors.blue,
+          color: Constants.blueDark,
         ),
         child: Center(
           child: Text(
@@ -351,13 +350,6 @@ List<Widget> _buildDrawerItems(String role, BuildContext context) {
             ),
           ),
         ),
-      ),
-      ListTile(
-        leading: const Icon(Icons.home),
-        title: const Text('Home'),
-        onTap: () {
-          Navigator.pop(context);
-        },
       ),
       ListTile(
         leading: const Icon(Icons.book),
@@ -393,10 +385,15 @@ List<Widget> _buildDrawerItems(String role, BuildContext context) {
         },
       ),
       ListTile(
-        leading: const Icon(Icons.logout),
-        title: const Text('Logout'),
+        leading: Icon(Icons.bar_chart),
+        title: Text('Course Statistics'),
         onTap: () {
-          signOutUser(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => TeacherStatsScreen(),
+            ),
+          );
         },
       ),
       ListTile(
@@ -408,6 +405,13 @@ List<Widget> _buildDrawerItems(String role, BuildContext context) {
             context,
             MaterialPageRoute(builder: (context) => ChatScreen()),
           );
+        },
+      ),
+      ListTile(
+        leading: const Icon(Icons.logout),
+        title: const Text('Logout'),
+        onTap: () {
+          signOutUser(context);
         },
       ),
     ];
