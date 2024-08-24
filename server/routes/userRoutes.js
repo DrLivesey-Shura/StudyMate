@@ -38,7 +38,7 @@ router
   .put(isAuthenticated, singleUpload, updateprofilepicture);
 
 // Admin Routes
-router.route("/admin/users").get(isAuthenticated, authorizeAdmin, getAllUsers);
+router.route("/users").get(isAuthenticated, getAllUsers);
 
 router
   .route("/admin/user/:id")

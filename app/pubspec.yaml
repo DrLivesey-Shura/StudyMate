@@ -42,6 +42,8 @@ dependencies:
   percent_indicator: ^4.2.3
   image_picker: ^1.1.2
   flutter_stripe: ^9.0.0
+  socket_io_client: ^2.0.3+1
+  web_socket_channel: ^3.0.1
 
 dev_dependencies:
   flutter_test:

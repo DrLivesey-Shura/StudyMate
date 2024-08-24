@@ -28,11 +28,9 @@ class _AddLectureScreenState extends State<AddLectureScreen> {
         await _picker.pickVideo(source: ImageSource.gallery);
 
     if (pickedVideo != null) {
-      // Ensure correct typing with Uint8List
       _video = Uint8List.fromList(await pickedVideo.readAsBytes());
       setState(() {});
     } else {
-      // If no video is picked
       showSnackBar(context, 'No video selected');
     }
   }

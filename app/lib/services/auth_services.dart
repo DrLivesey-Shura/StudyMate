@@ -65,11 +65,10 @@ class AuthService {
         onSuccess: () async {
           final data = jsonDecode(res.body);
 
-          // Check if user data and token are present
           if (data != null && data['user'] != null && data['token'] != null) {
             final userJson = jsonEncode(data['user']);
             final user = User.fromMap(data['user']);
-            final token = data['token']; // Extract the token
+            final token = data['token'];
 
             userProvider.setUserFromModel(user.copyWith(token: token));
 
@@ -92,7 +91,6 @@ class AuthService {
     }
   }
 
-  // get user data
   void getUserData(
     BuildContext context,
   ) async {

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:test/providers/user_provider.dart';
 import 'package:test/screens/Teacher/add_course_screen.dart';
 import 'package:test/screens/Teacher/manage_courses_screen.dart';
+import 'package:test/screens/chatscreen.dart';
 import 'package:test/screens/courses_screen.dart';
 import 'package:test/screens/profile_screen.dart';
 import 'package:test/services/auth_services.dart';
@@ -56,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     width: 44,
                     child: TextButton(
                       onPressed: () {
-                        Scaffold.of(context).openDrawer(); // Opens the Drawer
+                        Scaffold.of(context).openDrawer();
                       },
                       style: TextButton.styleFrom(
                         backgroundColor: Colors.white.withOpacity(0.3),
@@ -76,8 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
-          children: _buildDrawerItems(
-              user.role, context), // Build drawer items based on user role
+          children: _buildDrawerItems(user.role, context),
         ),
       ),
       body: Stack(
@@ -226,7 +226,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   children: <Widget>[
-                    // Replace this with your CardCourses widget
                     CardCourses(
                       image: Image.asset("assets/images/icon_1.png",
                           width: 40, height: 40),
@@ -325,6 +324,17 @@ List<Widget> _buildDrawerItems(String role, BuildContext context) {
           signOutUser(context);
         },
       ),
+      ListTile(
+        leading: const Icon(Icons.chat),
+        title: const Text('Chat'),
+        onTap: () {
+          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ChatScreen()),
+          );
+        },
+      ),
     ];
   } else if (role == 'Teacher') {
     return [
@@ -387,6 +397,17 @@ List<Widget> _buildDrawerItems(String role, BuildContext context) {
         title: const Text('Logout'),
         onTap: () {
           signOutUser(context);
+        },
+      ),
+      ListTile(
+        leading: const Icon(Icons.chat),
+        title: const Text('Chat'),
+        onTap: () {
+          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ChatScreen()),
+          );
         },
       ),
     ];

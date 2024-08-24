@@ -114,7 +114,7 @@ class User {
       'role': role,
       'password': password,
       'avatar': avatar.toMap(),
-      'subscription': subscription?.toMap(), // Nullable check
+      'subscription': subscription?.toMap(),
     };
   }
 

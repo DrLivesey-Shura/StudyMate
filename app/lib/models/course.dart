@@ -44,7 +44,7 @@ class Course {
     required this.numOfVideos,
     required this.createdAt,
     required this.poster,
-    this.lectures = const [], // Initialize with an empty list
+    this.lectures = const [],
   });
 
   factory Course.fromMap(Map<String, dynamic> map) {
@@ -81,7 +81,7 @@ class Lecture {
       id: map['_id'] ?? '',
       title: map['title'] ?? '',
       description: map['description'] ?? '',
-      videoUrl: map['video']['url'] ?? '', // Extract the video URL
+      videoUrl: map['video']['url'] ?? '',
     );
   }
 }
