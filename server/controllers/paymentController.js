@@ -1,156 +1,57 @@
-const catchAsyncError = require("../middlewares/catchAsyncError.js");
-const { User } = require("../models/User.js");
-const ErrorHandler = require("../utils/errorHandler.js");
-const { Payment } = require("../models/Payment.js");
-const braintree = require("braintree");
-const dotenv = require("dotenv");
+const { User } = require("../models/User");
 
-dotenv.config();
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
-const gateway = new braintree.BraintreeGateway({
-  environment: braintree.Environment.Sandbox,
-  merchantId: process.env.BRAINTREE_MERCHANT_ID,
-  publicKey: process.env.BRAINTREE_PUBLIC_KEY,
-  privateKey: process.env.BRAINTREE_PRIVATE_KEY,
-});
+const createSubscription = async (req, res) => {
+  try {
+    const { paymentMethodId, userId } = req.body;
+    const user = await User.findById(userId);
+    console.log("user: ", user);
+    console.log("paymentMethodId: ", paymentMethodId);
 
-const buySubscription = catchAsyncError(async (req, res, next) => {
-  const user = await User.findById(req.user._id);
-
-  if (user.role === "admin") {
-    return next(new ErrorHandler("Admin can't buy subscription", 400));
-  }
-
-  const { paymentMethodNonce } = req.body;
-  const planId = process.env.BRAINTREE_PLAN_ID;
-
-  if (!planId) {
-    return next(new ErrorHandler("Plan ID not configured", 400));
-  }
-
-  gateway.customer.create(
-    {
-      paymentMethodNonce,
+    const customer = await stripe.customers.create({
       email: user.email,
-    },
-    (err, result) => {
-      if (err || !result.success) {
-        return next(new ErrorHandler(err ? err.message : result.message, 400));
-      }
-
-      const customerId = result.customer.id;
-      const paymentMethodToken = result.customer.paymentMethods[0].token;
-
-      gateway.subscription.create(
-        {
-          paymentMethodToken,
-          planId,
-        },
-        async (err, result) => {
-          console.log("Braintree Response:", result);
-
-          if (err || !result.success) {
-            return next(
-              new ErrorHandler(err ? err.message : result.message, 400)
-            );
-          }
-
-          user.subscription.id = result.subscription.id;
-          user.subscription.status = result.subscription.status;
-          await user.save();
-
-          res.status(201).json({
-            success: true,
-            subscriptionId: result.subscription.id,
-          });
-        }
-      );
-    }
-  );
-});
-
-const paymentVerification = catchAsyncError(async (req, res, next) => {
-  const { bt_signature, bt_payment_id, bt_subscription_id } = req.body;
-
-  const user = await User.findById(req.user._id);
-
-  const subscription_id = user.subscription.id;
-
-  // Verify payment details using a webhook or another method
-  const isAuthentic = bt_signature === your_verification_logic_here;
-
-  if (!isAuthentic) {
-    return res.redirect(`${process.env.FRONTEND_URL}/paymentfail`);
-  }
-
-  await Payment.create({
-    bt_signature,
-    bt_payment_id,
-    bt_subscription_id,
-  });
-
-  user.subscription.status = "active";
-
-  await user.save();
-
-  res.redirect(
-    `${process.env.FRONTEND_URL}/paymentsuccess?reference=${bt_payment_id}`
-  );
-});
-
-const getBraintreeClientToken = catchAsyncError(async (req, res, next) => {
-  gateway.clientToken.generate({}, (err, response) => {
-    if (err) {
-      return next(new ErrorHandler(err.message, 500));
-    }
-
-    res.status(200).json({
-      success: true,
-      token: response.clientToken,
-    });
-  });
-});
-
-const cancelSubscription = catchAsyncError(async (req, res, next) => {
-  const user = await User.findById(req.user._id);
-
-  const subscriptionId = user.subscription.id;
-  let refund = false;
-
-  gateway.subscription.cancel(subscriptionId, async (err, result) => {
-    if (err || !result.success) {
-      return next(new ErrorHandler(err.message, 400));
-    }
-
-    const payment = await Payment.findOne({
-      bt_subscription_id: subscriptionId,
+      payment_method: paymentMethodId,
+      invoice_settings: {
+        default_payment_method: paymentMethodId,
+      },
     });
 
-    const gap = Date.now() - payment.createdAt;
-    const refundTime = process.env.REFUND_DAYS * 24 * 60 * 60 * 1000;
+    const subscription = await stripe.subscriptions.create({
+      customer: customer.id,
+      items: [{ plan: "price_1PnnOiC1JQ2VbTUThATEk6aE" }],
+      expand: ["latest_invoice.payment_intent"],
+    });
 
-    if (refundTime > gap) {
-      await gateway.transaction.refund(payment.bt_payment_id);
-      refund = true;
-    }
-
-    await payment.remove();
-    user.subscription.id = undefined;
-    user.subscription.status = undefined;
+    user.subscription.id = subscription.id;
+    user.subscription.status = subscription.status;
     await user.save();
 
-    res.status(200).json({
-      success: true,
-      message: refund
-        ? "Subscription cancelled. You will receive a full refund within 7 days."
-        : "Subscription cancelled. No refund initiated as subscription was cancelled after 7 days.",
-    });
-  });
-});
-
-module.exports = {
-  buySubscription,
-  paymentVerification,
-  getBraintreeClientToken,
-  cancelSubscription,
+    res
+      .status(200)
+      .json({ message: "Subscription created successfully", subscription });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Subscription creation failed" });
+  }
 };
+
+const cancelSubscription = async (req, res) => {
+  try {
+    const { userId } = req.body;
+    const user = await User.findById(userId);
+
+    const subscription = await stripe.subscriptions.del(user.subscription.id);
+
+    user.subscription.id = null;
+    user.subscription.status = "canceled";
+    await user.save();
+
+    res.status(200).json({ message: "Subscription canceled successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Subscription cancellation failed" });
+  }
+};
+
+module.exports = { createSubscription, cancelSubscription };

@@ -1,6 +1,5 @@
-name: flutter_node_auth
-description: A new Flutter project.
-
+name: test
+description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: "none" # Remove this line if you wish to publish to pub.dev
@@ -12,13 +11,15 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 # build by specifying --build-name and --build-number, respectively.
 # In Android, build-name is used as versionName while build-number used as versionCode.
 # Read more about Android versioning at https://developer.android.com/studio/publish/versioning
-# In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
+# In iOS, build-name is used as CFBundleShortVersionString while build-number is used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
+# In Windows, build-name is used as the major, minor, and patch parts
+# of the product and file versions while build-number is used as the build suffix.
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.17.6 <3.0.0"
+  sdk: ^3.5.0
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -29,25 +30,18 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_web_plugins:
-    sdk: flutter
+
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cloudinary_flutter: ^1.0.0
-  cloudinary_url_gen: ^1.0.0
-  cupertino_icons: ^1.0.2
-  provider: ^6.0.3
-  http: ^0.13.5
-  shared_preferences: ^2.0.15
-  image_picker: ^1.1.2
-  flutter_svg: ^2.0.0
-  mime: ^1.0.0
-  file_picker: ^5.0.0
-  google_fonts: ^4.0.4
-  percent_indicator: ^4.2.3
-  flutter_braintree: ^4.0.0
+  cupertino_icons: ^1.0.8
+  flutter_svg: ^2.0.10+1
+  provider: ^6.1.2
   video_player: ^2.9.1
-  js: ^0.7.1
+  shared_preferences: ^2.3.1
+  google_fonts: ^6.2.1
+  percent_indicator: ^4.2.3
+  image_picker: ^1.1.2
+  flutter_stripe: ^9.0.0
 
 dev_dependencies:
   flutter_test:
@@ -58,7 +52,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^2.0.0
+  flutter_lints: ^4.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -77,10 +71,10 @@ flutter:
   assets:
     - assets/images/
   # An image asset can refer to one or more resolution-specific "variants", see
-  # https://flutter.dev/assets-and-images/#resolution-aware
+  # https://flutter.dev/to/resolution-aware-images
 
   # For details regarding adding assets from package dependencies, see
-  # https://flutter.dev/assets-and-images/#from-packages
+  # https://flutter.dev/to/asset-from-package
 
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
@@ -100,4 +94,4 @@ flutter:
   #         weight: 700
   #
   # For details regarding fonts from package dependencies,
-  # see https://flutter.dev/custom-fonts/#from-packages
+  # see https://flutter.dev/to/font-from-package

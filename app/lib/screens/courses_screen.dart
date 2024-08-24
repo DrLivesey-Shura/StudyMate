@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_node_auth/models/user.dart';
-import 'package:flutter_node_auth/services/course_service.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_node_auth/providers/user_provider.dart';
+import 'package:test/models/user.dart';
+import 'package:test/providers/user_provider.dart';
+import 'package:test/services/course_service.dart';
 import '../models/course.dart';
 import 'package:video_player/video_player.dart';
 import '../utils/constants.dart';

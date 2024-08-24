@@ -97,6 +97,7 @@ const addLecture = catchAsyncError(async (req, res, next) => {
   });
 
   course.numOfVideos = course.lectures.length;
+  console.log("courtse lectures : ", course.lectures);
 
   await course.save();
 

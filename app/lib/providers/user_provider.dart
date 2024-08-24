@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_node_auth/models/user.dart';
-import 'package:flutter_node_auth/services/auth_services.dart';
+import 'package:test/models/user.dart';
+import 'package:test/services/auth_services.dart';
 
 class UserProvider extends ChangeNotifier {
   User _user = User(

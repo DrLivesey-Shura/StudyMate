@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_node_auth/providers/user_provider.dart';
-import 'package:flutter_node_auth/screens/Teacher/add_course_screen.dart';
-import 'package:flutter_node_auth/screens/Teacher/manage_courses_screen.dart';
-import 'package:flutter_node_auth/screens/profile_screen.dart';
-import 'package:flutter_node_auth/services/auth_services.dart';
 import 'package:provider/provider.dart';
+import 'package:test/providers/user_provider.dart';
+import 'package:test/screens/Teacher/add_course_screen.dart';
+import 'package:test/screens/Teacher/manage_courses_screen.dart';
+import 'package:test/screens/courses_screen.dart';
+import 'package:test/screens/profile_screen.dart';
+import 'package:test/services/auth_services.dart';
 
 import '../utils/constants.dart';
 import '../widgets/card_courses.dart';
 import '../widgets/header.dart';
 import 'category_screen.dart';
-import 'courses_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -20,10 +20,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _searchControl = TextEditingController();
   late FocusNode myFocusNode;
-
-  void signOutUser(BuildContext context) {
-    AuthService().signOut(context);
-  }
 
   @override
   void initState() {
@@ -273,6 +269,10 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 List<Widget> _buildDrawerItems(String role, BuildContext context) {
+  void signOutUser(BuildContext context) {
+    AuthService().signOut(context);
+  }
+
   if (role == 'Student') {
     return [
       const DrawerHeader(
@@ -322,7 +322,7 @@ List<Widget> _buildDrawerItems(String role, BuildContext context) {
         leading: const Icon(Icons.logout),
         title: const Text('Logout'),
         onTap: () {
-          // signOutUser(context);
+          signOutUser(context);
         },
       ),
     ];
@@ -386,7 +386,7 @@ List<Widget> _buildDrawerItems(String role, BuildContext context) {
         leading: const Icon(Icons.logout),
         title: const Text('Logout'),
         onTap: () {
-          // signOutUser(context);
+          signOutUser(context);
         },
       ),
     ];

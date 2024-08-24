@@ -1,8 +1,11 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:flutter_node_auth/utils/utils.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:flutter_node_auth/services/course_service.dart';
+import 'package:provider/provider.dart';
+import 'package:test/models/user.dart';
+import 'package:test/providers/user_provider.dart';
+import 'package:test/services/course_service.dart';
+import 'package:test/utils/utils.dart';
 
 class AddLectureScreen extends StatefulWidget {
   final String courseId;
@@ -35,6 +38,7 @@ class _AddLectureScreenState extends State<AddLectureScreen> {
   }
 
   void addLecture() async {
+    User user = Provider.of<UserProvider>(context, listen: false).user;
     if (_formKey.currentState!.validate()) {
       if (_video == null) {
         showSnackBar(context, 'Please select a video');
@@ -47,6 +51,7 @@ class _AddLectureScreenState extends State<AddLectureScreen> {
         title: title,
         description: description,
         video: _video!,
+        token: user.token,
       );
       Navigator.pop(context);
     }

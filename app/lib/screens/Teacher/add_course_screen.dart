@@ -1,12 +1,11 @@
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:flutter_node_auth/providers/user_provider.dart';
-import 'package:flutter_node_auth/services/course_service.dart';
-import 'dart:html' as html;
-
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-
-import '../../models/user.dart';
+import 'package:test/models/user.dart';
+import 'package:test/providers/user_provider.dart';
+import 'package:test/services/course_service.dart';
+import 'dart:typed_data';
+// import 'dart:html' as html;
 
 class AddCourseScreen extends StatefulWidget {
   @override
@@ -22,26 +21,17 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
   Uint8List? _imageBytes;
   String? _fileName;
 
-  // Method to pick image from gallery
   Future<void> _pickImage() async {
-    final html.FileUploadInputElement uploadInput =
-        html.FileUploadInputElement();
-    uploadInput.accept = 'image/*';
-    uploadInput.click();
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
-    uploadInput.onChange.listen((e) async {
-      final files = uploadInput.files;
-      if (files!.isEmpty) return;
-
-      final reader = html.FileReader();
-      reader.readAsArrayBuffer(files[0]);
-      reader.onLoadEnd.listen((e) {
-        setState(() {
-          _imageBytes = reader.result as Uint8List;
-          _fileName = files[0].name;
-        });
+    if (image != null) {
+      final Uint8List imageBytes = await image.readAsBytes();
+      setState(() {
+        _imageBytes = imageBytes;
+        _fileName = image.name;
       });
-    });
+    }
   }
 
   void addCourse() async {

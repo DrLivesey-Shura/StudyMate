@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_node_auth/custom_textfield.dart';
-import 'package:flutter_node_auth/services/auth_services.dart';
+import 'package:test/custom_textfield.dart';
+import 'package:test/services/auth_services.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
